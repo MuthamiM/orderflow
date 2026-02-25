@@ -85,20 +85,23 @@ class OddsReactor:
 if __name__ == "__main__":
     reactor = OddsReactor(TARGET_TOKEN_ID)
     
-    # Simulating a mock crash after 10 seconds for the hackathon demo
-    print("--- [HACKATHON DEMO MODE: WILL SIMULATE CRASH AFTER 2 TICKS] ---")
+    print("--- [HACKATHON DEMO MODE: CONTINUOUS SIMULATION] ---")
     
     first_price = reactor.fetch_live_odds()
     if first_price == 0.0: first_price = 0.50 # Fallback
     
-    print(f"[{datetime.now().isoformat()}] Live Odds: {first_price*100:.1f}%")
-    reactor.last_price = first_price
-    time.sleep(5)
-    
-    print(f"[{datetime.now().isoformat()}] Live Odds: {first_price*100:.1f}%")
-    time.sleep(5)
-    
-    # Force the simulated drop
-    crash_price = first_price - 0.06
-    print(f"[{datetime.now().isoformat()}] Live Odds: {crash_price*100:.1f}%")
-    reactor.execute_trade(crash_price, 0.06)
+    while True:
+        print(f"[{datetime.now().isoformat()}] Live Odds: {first_price*100:.1f}%")
+        reactor.last_price = first_price
+        time.sleep(5)
+        
+        print(f"[{datetime.now().isoformat()}] Live Odds: {first_price*100:.1f}%")
+        time.sleep(5)
+        
+        # Force the simulated drop
+        crash_price = first_price - 0.06
+        print(f"[{datetime.now().isoformat()}] Live Odds: {crash_price*100:.1f}%")
+        reactor.execute_trade(crash_price, 0.06)
+        
+        print("\n--- [RESETTING ORDERBOOK FOR DEMO IN 10s] ---")
+        time.sleep(10)
