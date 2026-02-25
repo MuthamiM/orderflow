@@ -1,0 +1,130 @@
+{
+  "name": "Orderflow 001 - Alpha Feed",
+  "nodes": [
+    {
+      "parameters": {
+        "url": "http://feeds.bbci.co.uk/news/world/rss.xml"
+      },
+      "id": "2d1a33b9-2c7c-4734-9189-df8cfc553d10",
+      "name": "RSS Feed Trigger",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [
+        200,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4o-mini",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=Analyze this breaking news headline: {{ $json.title }}\n\nDoes this severely impact any major global political or macroeconomic prediction market? Output YES or NO, followed by a probability impact score (0-100)."
+            }
+          ]
+        }
+      },
+      "id": "e4293c6f-cf33-4f93-bc46-52f146430386",
+      "name": "OpenAI: Evaluate Impact",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1,
+      "position": [
+        500,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.message.content }}",
+              "operation": "contains",
+              "value2": "YES"
+            }
+          ]
+        }
+      },
+      "id": "8c48a731-9f93-4702-b0cc-eb0be2d665fb",
+      "name": "Filter High Impact",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        800,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://localhost:8000/api/v1/trade",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-webhook-secret",
+              "value": "YOUR_WEBHOOK_SECRET_HERE"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"market_id\": \"0x0000000000000000000000000000000000000000\",\n  \"token_id\": \"0x0000000000000000000000000000000000000000\",\n  \"side\": \"BUY\",\n  \"confidence\": 95.0,\n  \"news_source\": \"{{ $('RSS Feed Trigger').item.json.title }}\"\n}"
+      },
+      "id": "5f1b5391-7d1a-4d6b-b152-1f48665b1cd2",
+      "name": "Trigger Execution Engine",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        1100,
+        280
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "RSS Feed Trigger": {
+      "main": [
+        [
+          {
+            "node": "OpenAI: Evaluate Impact",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI: Evaluate Impact": {
+      "main": [
+        [
+          {
+            "node": "Filter High Impact",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter High Impact": {
+      "main": [
+        [
+          {
+            "node": "Trigger Execution Engine",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "f9011de3-b541-4770-bb57-d5d2b700f5dd",
+  "id": "yZ3p6lq8x",
+  "meta": {
+    "templateCredsSetupCompleted": true
+  }
+}

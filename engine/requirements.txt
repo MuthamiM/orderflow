@@ -1,0 +1,12 @@
+# engine
+fastapi==0.109.2
+uvicorn==0.27.1
+pydantic==2.6.1
+pydantic-settings==2.1.0
+python-dotenv==1.0.1
+
+# polymarket
+py-clob-client==0.1.7
+# or alternatively we can use direct API calls if py-clob-client has dependency conflicts
+requests==2.31.0
+web3==6.15.1
