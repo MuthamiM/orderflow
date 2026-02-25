@@ -18,11 +18,9 @@ This is an ultra-low-latency, AI-augmented news arbitrage engine built for predi
 ## 🧠 Strategy Logic
 The edge hypothesis relies on **information arbitrage**. Human traders acting on prediction markets often have a latency of minutes to hours when pricing in breaking news events (e.g., election outcomes, central bank rate hikes, geopolitical conflicts). 
 
-The Alpha Feed automates this probabilistic reasoning:
-1. Ingests raw news via RSS/Twitter at millisecond latency.
-2. An LLM (Meta Llama 3 via OpenRouter) evaluates the breaking headline.
-3. The AI answers a binary question: *Does this severely impact any major prediction market?*
-4. If the AI returns a confidence score >85.0%, the execution engine sizes a Kelly Criterion bet and executes a market order instantly.
+The Alpha Feed automates this probabilistic reasoning on two distinct fronts:
+1. **Information Arbitrage:** Ingests raw news via RSS/Twitter at millisecond latency. An LLM answers a binary question regarding global impact, triggering a fixed-size Kelly trade if confidence >85.0%.
+2. **Probability Decay Modeling (Live Odds):** A standalone reactor script directly polls Polymarket's L2 Orderbook, calculating probability decay between ticks. If a market's "YES" shares crash aggressively (e.g., >5% drop in 10s), the execution engine buys the dip to capture spread bounces.
 
 ## 🏗️ Architecture
 The system employs a heavily decoupled pipeline to ensure stability and latency reduction:
@@ -78,10 +76,15 @@ POLY_API_PASSPHRASE=your_passphrase
 PRIVATE_KEY=your_polygon_wallet_key
 ```
 
-3. **Run the Backend Engine**
+3. **Run the Backend Webhook Engine**
 ```bash
 python main.py
 ```
 
-4. **Import the n8n Workflow**
+4. **Run the Live Odds Reactor (Probability Decay Model)**
+```bash
+python odds_reactor.py
+```
+
+5. **Import the n8n Workflow**
 Open your n8n dashboard and import `n8n/polymarket_arbitrage_workflow.json` to load the inference pipeline. Ensure the final `HTTP Request` node points to your local Python engine via Ngrok.
