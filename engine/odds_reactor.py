@@ -45,23 +45,23 @@ class OddsReactor:
 
     def execute_trade(self, price: float, drop: float, asset_name: str):
         """Simulates routing the trade to the backend execution engine."""
-        print(f"\n🚀 [EXECUTION ENGINE TRIGGERED] 🚀")
+        print(f"\n[EXECUTION ENGINE TRIGGERED]")
         print(f"[{datetime.now().isoformat()}] PROBABILITY DECAY DETECTED FOR {asset_name}!")
         print(f"Odds crashed by {drop*100:.1f}%!")
         print(f"Executing BUY Order at {price*100:.1f} cents per share to catch the bounce...")
         print(f"-> Routing to Polygon Mainnet via RiskEngine...\n")
         time.sleep(1)
-        print(f"✅ Trade Filled: 50.00 USDC @ {price:.2f}")
+        print(f"[SUCCESS] Trade Filled: 50.00 USDC @ {price:.2f}")
         
         # Simulate Win/Loss Outcome for the Demo
         time.sleep(2)
         profit_chance = random.random()
         if profit_chance > 0.4:
             pnl = random.uniform(5.0, 15.0)
-            print(f"🎉 TRADE CLOSED [WIN]: +${pnl:.2f} Profit on {asset_name}")
+            print(f"[TRADE CLOSED - WIN]: +${pnl:.2f} Profit on {asset_name}")
         else:
             loss = random.uniform(1.0, 5.0)
-            print(f"📉 TRADE CLOSED [LOSS]: -${loss:.2f} Loss on {asset_name}")
+            print(f"[TRADE CLOSED - LOSS]: -${loss:.2f} Loss on {asset_name}")
 
     def run(self):
         print(f"Starting Live Odds Reactor...")
