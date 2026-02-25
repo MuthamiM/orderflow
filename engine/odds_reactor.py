@@ -58,10 +58,12 @@ class OddsReactor:
         profit_chance = random.random()
         if profit_chance > 0.4:
             pnl = random.uniform(5.0, 15.0)
-            print(f"[TRADE CLOSED - WIN]: +${pnl:.2f} Profit on {asset_name}")
+            # Orange ANSI Code
+            print(f"[TRADE CLOSED - WIN]: \033[38;5;214m+${pnl:.2f}\033[0m Profit on {asset_name}")
         else:
             loss = random.uniform(1.0, 5.0)
-            print(f"[TRADE CLOSED - LOSS]: -${loss:.2f} Loss on {asset_name}")
+            # Red ANSI Code
+            print(f"[TRADE CLOSED - LOSS]: \033[91m-${loss:.2f}\033[0m Loss on {asset_name}")
 
     def run(self):
         print(f"Starting Live Odds Reactor...")
