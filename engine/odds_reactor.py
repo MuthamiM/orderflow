@@ -1,18 +1,19 @@
 import time
+import random
 import requests
 from datetime import datetime
 
 # Polymarket Public CLOB API
 CLOB_URL = "https://clob.polymarket.com"
 
-# Example Token ID (e.g., Bitcoin to hit $100k by March)
-# You can replace this with any active Polymarket Token ID
+# Example Token ID
 TARGET_TOKEN_ID = "21742633143463906290569050155826241533067272736897614950488156847949938836455" 
 
 # Strategy Configuration: Probability Decay Model
-# We watch for a rapid drop in odds (e.g., probability crashing > 5% in 10 seconds)
 POLL_INTERVAL_SEC = 5.0
 CRASH_THRESHOLD = 0.05 
+
+ASSETS = ["XAU/USD (Gold)", "BTC/USD (Bitcoin)", "SPX (S&P 500)", "EUR/USD (Euro)", "ETH/USD (Ethereum)"]
 
 class OddsReactor:
     def __init__(self, token_id: str):
@@ -42,18 +43,25 @@ class OddsReactor:
             print(f"[{datetime.now().isoformat()}] Error fetching odds: {e}")
             return 0.0
 
-    def execute_trade(self, price: float, drop: float):
+    def execute_trade(self, price: float, drop: float, asset_name: str):
         """Simulates routing the trade to the backend execution engine."""
         print(f"\n🚀 [EXECUTION ENGINE TRIGGERED] 🚀")
-        print(f"[{datetime.now().isoformat()}] PROBABILITY DECAY DETECTED!")
+        print(f"[{datetime.now().isoformat()}] PROBABILITY DECAY DETECTED FOR {asset_name}!")
         print(f"Odds crashed by {drop*100:.1f}%!")
         print(f"Executing BUY Order at {price*100:.1f} cents per share to catch the bounce...")
         print(f"-> Routing to Polygon Mainnet via RiskEngine...\n")
-        # In production:
-        # client = PolyClient()
-        # client.execute_market_order(...)
         time.sleep(1)
-        print(f"✅ Trade Filled: 50 USDC @ {price}")
+        print(f"✅ Trade Filled: 50.00 USDC @ {price:.2f}")
+        
+        # Simulate Win/Loss Outcome for the Demo
+        time.sleep(2)
+        profit_chance = random.random()
+        if profit_chance > 0.4:
+            pnl = random.uniform(5.0, 15.0)
+            print(f"🎉 TRADE CLOSED [WIN]: +${pnl:.2f} Profit on {asset_name}")
+        else:
+            loss = random.uniform(1.0, 5.0)
+            print(f"📉 TRADE CLOSED [LOSS]: -${loss:.2f} Loss on {asset_name}")
 
     def run(self):
         print(f"Starting Live Odds Reactor...")
@@ -91,17 +99,20 @@ if __name__ == "__main__":
     if first_price == 0.0: first_price = 0.50 # Fallback
     
     while True:
+        target_asset = random.choice(ASSETS)
+        print(f"\n== Watching Live Orderbook for: {target_asset} ==")
+        
         print(f"[{datetime.now().isoformat()}] Live Odds: {first_price*100:.1f}%")
         reactor.last_price = first_price
-        time.sleep(5)
+        time.sleep(3)
         
         print(f"[{datetime.now().isoformat()}] Live Odds: {first_price*100:.1f}%")
-        time.sleep(5)
+        time.sleep(3)
         
         # Force the simulated drop
-        crash_price = first_price - 0.06
+        crash_price = first_price - random.uniform(0.06, 0.12)
         print(f"[{datetime.now().isoformat()}] Live Odds: {crash_price*100:.1f}%")
-        reactor.execute_trade(crash_price, 0.06)
+        reactor.execute_trade(crash_price, first_price - crash_price, target_asset)
         
-        print("\n--- [RESETTING ORDERBOOK FOR DEMO IN 10s] ---")
-        time.sleep(10)
+        print("\n--- [RESETTING ORDERBOOK FOR NEXT ASSET IN 5s] ---")
+        time.sleep(5)
