@@ -1,4 +1,4 @@
-mfrom py_clob_client.client import ClobClient
+from py_clob_client.client import ClobClient
 from py_clob_client.clob_types import OrderArgs, FmpAggOrderArgs
 import config
 from schemas import TradePayload

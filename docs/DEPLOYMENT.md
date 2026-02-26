@@ -1,43 +1,26 @@
-# Deployment Guide
+# Local Setup Guide (Free)
 
-This project is configured for automated deployment to **Render** using their Infrastructure-as-Code feature and the Render CLI.
+For the Hackathon demo, the fastest and 100% free way to run this project is completely locally on your machine, using `ngrok` to expose your local Python server to the internet so that n8n can send it webhooks.
 
-## Prerequisites
-1.  A Render account (render.com)
-2.  The Render CLI (`npm install -g @render/cli` or download the binary)
-3.  A connected GitHub Repository.
+## 1. Start the Python Execution Engine
+1. Open up a terminal.
+2. `cd engine`
+3. Activate the virtual environment: `.\venv\Scripts\Activate.ps1`
+4. Make sure your `.env` file is filled out with your API keys.
+5. Boot the server: `python main.py`
 
-## Deploying the Execution Engine (Python)
+Your server is now running on `http://localhost:8000`.
 
-We have provided a `render.yaml` Blueprint file at the root of the repository. This defines all necessary environment variables, start scripts, and build commands.
+## 2. Expose the Server with ngrok
+Because n8n might be running in the cloud or in a separate container, it needs a public URL to talk to your local Python server.
+1. Open a **second, new terminal**.
+2. Run `ngrok http 8000`
+3. Ngrok will give you a "Forwarding" secure URL that looks like `https://xyz123.ngrok-free.app`
 
-### Option 1: Render Dashboard
-1. Go to the Render Dashboard.
-2. Click **New +** > **Blueprint**.
-3. Connect your GitHub repository containing this project.
-4. Render will automatically detect `render.yaml` and prompt you to fill in the missing secrets (e.g., `POLY_API_KEY`, `PRIVATE_KEY`).
-5. Click **Apply**.
+## 3. Run the n8n Workflow
+1. Start your local n8n instance by running `npx n8n` in a **third terminal**.
+2. Go to `http://localhost:5678` in your browser.
+3. Import the `n8n/polymarket_arbitrage_workflow.json` file.
+4. **Crucial Step:** Open the final "HTTP Request" node. Change the URL from `http://localhost:8000/api/v1/trade` to your new ngrok forwarding URL you got in step 2: `https://xyz123.ngrok-free.app/api/v1/trade`.
 
-### Option 2: Render CLI
-If you prefer the terminal:
-1. Ensure your code is pushed to your Git remote.
-2. Run `render login`
-3. Link your project: `render init`
-4. Deploy using the blueprint:
-```bash
-render blueprint apply render.yaml
-```
-5. You will be prompted in the CLI to enter the required secrets for your Polymarket wallet.
-
-## Deploying the n8n Workflow
-
-For the hackathon, the easiest way to run the n8n orchestrator is locally or on a cheap VPS, as n8n can be resource-intensive for standard serverless free tiers.
-
-**To run locally for the demo:**
-```bash
-npx n8n
-```
-1. Open `http://localhost:5678`
-2. Go to **Workflows** > **Import from File**.
-3. Select `n8n/polymarket_arbitrage_workflow.json`
-4. Connect the Webhook node to the URL Render generated for your Python engine.
+You are now fully live and trading without needing to pay for Render! Make sure to take a video recording of this process for your Devpost submission!

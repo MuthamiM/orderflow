@@ -8,7 +8,13 @@ from schemas import TradePayload, TradeResponse
 # from polymarket_client import PolyClient
 # from risk_manager import RiskEngine
 
-app = FastAPI(title="Orderflow 001 - Alpha Feed Engine")
+import os
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
+
+app = FastAPI(title="Polymarket Arbitrage Engine")
 
 def verify_webhook_secret(x_webhook_secret: str = Header(...)):
     if x_webhook_secret != config.WEBHOOK_SECRET:
