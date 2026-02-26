@@ -12,14 +12,14 @@
 
 ---
 
-## 🚀 Demo Video
+## Demo Video
 > *(Link your YouTube or Loom video here before submitting on Devpost!)*
 
-[**▶ Watch The Alpha Feed Demo**](https://youtube.com)
+[**Watch The Alpha Feed Demo**](https://youtube.com)
 
 ---
 
-## 🧠 Strategy Logic
+## Strategy Logic
 
 The edge hypothesis relies on **information arbitrage**. Human traders on prediction markets often have a latency of minutes to hours when pricing in breaking news events (elections, rate hikes, geopolitical conflicts).
 
@@ -30,31 +30,31 @@ The Alpha Feed automates this on two fronts:
 
 ---
 
-## 🏗️ Architecture
+## Architecture
 
 ```mermaid
 flowchart LR
-    A["📰 BBC RSS / Twitter"] -->|Raw Headlines| B["🔄 n8n Orchestrator"]
-    B -->|Headline Text| C["🤖 Llama 3 8B\n(OpenRouter)"]
+    A["BBC RSS / Twitter"] -->|Raw Headlines| B["n8n Orchestrator"]
+    B -->|Headline Text| C["Llama 3 8B via OpenRouter"]
     C -->|Confidence Score| B
-    B -->|Webhook\n(confidence > 85%)| D["⚡ FastAPI Engine"]
-    D -->|Risk Check| E["🛡️ Risk Manager"]
-    E -->|Approved| F["📈 Polymarket CLOB\n(Polygon L2)"]
-    
-    G["📊 Odds Reactor"] -->|Poll Orderbook| F
+    B -->|"Webhook (confidence > 85%)"| D["FastAPI Engine"]
+    D -->|Risk Check| E["Risk Manager"]
+    E -->|Approved| F["Polymarket CLOB on Polygon L2"]
+
+    G["Odds Reactor"] -->|Poll Orderbook| F
     G -->|Decay Detected| D
 ```
 
 | Component | Technology | Latency |
 | :--- | :--- | :--- |
-| News Ingestion → LLM Inference | n8n + OpenRouter | ~450ms |
-| LLM Output → n8n Filtering | n8n IF Node | ~12ms |
-| Webhook → Risk Evaluation | FastAPI + Pydantic | ~20ms |
+| News Ingestion to LLM Inference | n8n + OpenRouter | ~450ms |
+| LLM Output to n8n Filtering | n8n IF Node | ~12ms |
+| Webhook to Risk Evaluation | FastAPI + Pydantic | ~20ms |
 | **Total Pipeline** | **End-to-End** | **< 500ms** |
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 orderflow/
@@ -84,7 +84,7 @@ orderflow/
 
 ---
 
-## 📡 Data Sources
+## Data Sources
 
 | Source | Purpose |
 | :--- | :--- |
@@ -94,19 +94,20 @@ orderflow/
 
 ---
 
-## 📊 Performance Metrics & Measurable Output
+## Performance Metrics and Measurable Output
 
 **Risk Management Constraints:**
+
 | Parameter | Value |
 | :--- | :--- |
-| `MAX_ORDER_SIZE_USDC` | Hard-capped at 50 USDC per signal |
-| `MIN_CONFIDENCE_THRESHOLD` | Must exceed 85.0% |
-| Dynamic Sizing | Simplified Kelly Criterion (80–100% range) |
+| MAX_ORDER_SIZE_USDC | Hard-capped at 50 USDC per signal |
+| MIN_CONFIDENCE_THRESHOLD | Must exceed 85.0% |
+| Dynamic Sizing | Simplified Kelly Criterion (80-100% range) |
 | Exchange Minimum | 5.0 USDC floor |
 
 ---
 
-## 💻 Quick Start
+## Quick Start
 
 ### 1. Install the Execution Engine
 ```bash
@@ -134,32 +135,32 @@ python odds_reactor.py
 ```
 
 ### 5. Import the n8n Workflow
-See [`n8n/README.md`](n8n/README.md) for full setup instructions.
+See [n8n/README.md](n8n/README.md) for full setup instructions.
 
 ---
 
-## 🧪 Testing
+## Testing
 
 ```bash
 cd engine
 pytest test_main.py -v
 ```
 
-All 5 tests cover: health checks, webhook authentication, valid trade execution, and confidence threshold rejection. See [`docs/QA_REPORT.md`](docs/QA_REPORT.md) for the full QA report.
+All 5 tests cover: health checks, webhook authentication, valid trade execution, and confidence threshold rejection. See [docs/QA_REPORT.md](docs/QA_REPORT.md) for the full QA report.
 
 ---
 
-## 📚 Documentation
+## Documentation
 
 | Document | Description |
 | :--- | :--- |
-| [`docs/API.md`](docs/API.md) | Full API endpoint reference |
-| [`docs/QA_REPORT.md`](docs/QA_REPORT.md) | Quality assurance & testing report |
-| [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) | Local deployment guide (ngrok + n8n) |
-| [`CONTRIBUTING.md`](CONTRIBUTING.md) | How to contribute |
+| [docs/API.md](docs/API.md) | Full API endpoint reference |
+| [docs/QA_REPORT.md](docs/QA_REPORT.md) | Quality assurance and testing report |
+| [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) | Local deployment guide (ngrok + n8n) |
+| [CONTRIBUTING.md](CONTRIBUTING.md) | How to contribute |
 
 ---
 
-## 📄 License
+## License
 
 This project is licensed under the [MIT License](LICENSE).
